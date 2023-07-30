@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>
+    <%= title %>
+  </title>
+</head>
+
+<body>
+  <h1>HTML to DOCX Converter</h1>
+  <h1>
+    <%= message %>
+  </h1>
+  <form id="converterForm">
+    <textarea name="html" rows="10" cols="50" required></textarea>
+    <input type="text" name="filename" required value="demo">
+    <button type="submit">Convert to DOCX</button>
+  </form>
+  <script>
+    document.getElementById('converterForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+
+      // fetch('/convert', {
+      //   method: 'POST',
+      //   body: formData
+      // })
+      // .then((response) => console.log(response.body))
+      // .then((blob) => {
+      //   const url = URL.createObjectURL(blob);
+      //   const a = document.createElement('a');
+      //   a.href = url;
+      //   a.download = 'converted.docx';
+      //   document.body.appendChild(a);
+      //   a.click();
+      //   a.remove();
+      //   URL.revokeObjectURL(url);
+      // })
+      // .catch((error) => {
+      //   console.error('Conversion error:', error);
+      // });
+      const jsonData = {};
+      for (const pair of formData.entries()) {
+        const [key, value] = pair;
+        jsonData[key] = value;
+      }
+
+      const jsonString = JSON.stringify(jsonData);
+      console.log(jsonString);
+      fetch('/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonString,
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        return response.json(); // You can also use response.text() if expecting plain text/HTML
+      }).then((responseData) => {
+        console.log('Response from the server:');
+        console.log(responseData);
+        downloadFile(responseData.fileUrl,responseData.fileName);
+
+      }).catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+    
+    });
+    function downloadFile(url,filename) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename); // Replace with the desired file name
+
+      // Append the link to the document and trigger a click on it
+      document.body.appendChild(link);
+      link.click();
+
+      // Remove the link from the document after the download is initiated
+      document.body.removeChild(link);
+    }
+  
+  </script>
+</body>
+
+</html>
