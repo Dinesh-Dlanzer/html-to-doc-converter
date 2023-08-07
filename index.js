@@ -76,7 +76,7 @@ app.post("/docconvert/convert-from-url", upload.none(), async (req, res) => {
                 const fileFullName = fileName + ".docx";
                 const filePath = './public/' + fileFullName;
                 const currentDomain = req.headers.host || 'Unknown';
-                const fileUrl = "https://" + currentDomain + '/docconvert/' + fileFullName;
+                const fileUrl = "https://" + currentDomain + '/' + fileFullName;
 
                 console.log({ fileName: fileName, fileUrl: fileUrl })
                 fs.writeFile(filePath, fileBuffer, (error) => {
